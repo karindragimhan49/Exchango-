@@ -1,5 +1,6 @@
-import Hero from '@/components/Hero'
-import ConverterCard from '@/components/ConverterCard'
+import Hero from '../components/Hero'
+import ConverterCard from '../components/ConverterCard'
+
 import Head from 'next/head'
 
 export default function Home() {

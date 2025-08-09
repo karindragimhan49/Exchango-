@@ -1,9 +1,11 @@
-'use client' // This must be a client component to use hooks
-
+'use client' 
 import { useState, useEffect } from 'react'
+import { useAuth } from '../context/AuthContext'
+import Link from 'next/link'
 
 export default function ConverterCard() {
-  // State variables for our form and results
+  const { user, saveTransfer } = useAuth(); // Get user and saveTransfer function from context
+
   const [currencies, setCurrencies] = useState([]);
   const [from, setFrom] = useState('USD');
   const [to, setTo] = useState('LKR');
@@ -11,49 +13,74 @@ export default function ConverterCard() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  const apiKey = process.env.NEXT_PUBLIC_EXCHANGE_RATE_API_KEY;
 
-  // 1. Fetch currencies when the component loads
   useEffect(() => {
+    if (!apiKey) {
+      setError("API Key is not configured.");
+      setLoading(false);
+      return;
+    }
+
     const fetchCurrencies = async () => {
+      setLoading(true);
+      setError('');
       try {
-        setLoading(true);
-        const res = await fetch('/api/currencies');
-        if (!res.ok) throw new Error('Could not fetch currencies');
+        const res = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/codes`);
+        if (!res.ok) throw new Error('Could not fetch currencies.');
         const data = await res.json();
-        setCurrencies(data);
-        setError('');
+        if (data.result === 'success') {
+          setCurrencies(data.supported_codes);
+        } else {
+          throw new Error(data['error-type'] || 'An unknown error occurred.');
+        }
       } catch (err) {
-        setError(err.message);
+        setError(err.message.replace(/-/g, ' '));
+        console.error(err);
       } finally {
         setLoading(false);
       }
     };
+    
     fetchCurrencies();
-  }, []); // Empty array means this runs only once
+  }, [apiKey]); 
 
-  // 2. Handle the conversion when the form is submitted
   const handleConvert = async (e) => {
     e.preventDefault();
+    if (!amount || amount <= 0) {
+        setError("Please enter a valid amount.");
+        return;
+    }
     setLoading(true);
     setError('');
     setResult(null);
 
     try {
-      const res = await fetch('/api/convert', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ from, to, amount }),
-      });
-
+      const res = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/pair/${from}/${to}/${amount}`);
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.message || 'Conversion request failed');
+        throw new Error(errorData['error-type'] || 'Conversion request failed');
       }
-
       const data = await res.json();
-      setResult(data);
+      if (data.result === 'success') {
+          setResult(data);
+          // If a user is logged in, save the transfer
+          if (user) {
+            saveTransfer({
+              fromCurrency: from,
+              toCurrency: to,
+              amount: parseFloat(amount),
+              convertedAmount: data.conversion_result,
+              rate: data.conversion_rate,
+            });
+          }
+      } else {
+          throw new Error(data['error-type'] || 'An unknown error occurred during conversion.');
+      }
     } catch (err) {
-      setError(err.message);
+      setError(err.message.replace(/-/g, ' '));
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -65,7 +92,9 @@ export default function ConverterCard() {
         <h3 className="text-2xl font-bold text-center text-slate-800 mb-8">
           Currency Converter
         </h3>
+        
         <form className="space-y-6" onSubmit={handleConvert}>
+          {/* ... (From and To dropdowns are here) ... */}
           {/* From Currency Dropdown */}
           <div>
             <label htmlFor="from" className="block text-sm font-medium text-slate-600 mb-2">From</label>
@@ -74,9 +103,9 @@ export default function ConverterCard() {
               value={from}
               onChange={(e) => setFrom(e.target.value)}
               className="w-full p-3 bg-slate-50/80 text-slate-900 rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              disabled={loading}
+              disabled={loading || currencies.length === 0}
             >
-              {currencies.map(([code, name]) => (
+              {currencies.length === 0 ? <option>Loading...</option> : currencies.map(([code, name]) => (
                 <option key={code} value={code}>{code} - {name}</option>
               ))}
             </select>
@@ -90,9 +119,9 @@ export default function ConverterCard() {
               value={to}
               onChange={(e) => setTo(e.target.value)}
               className="w-full p-3 bg-slate-50/80 text-slate-900 rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              disabled={loading}
+              disabled={loading || currencies.length === 0}
             >
-              {currencies.map(([code, name]) => (
+               {currencies.length === 0 ? <option>Loading...</option> : currencies.map(([code, name]) => (
                 <option key={code} value={code}>{code} - {name}</option>
               ))}
             </select>
@@ -112,37 +141,37 @@ export default function ConverterCard() {
             />
           </div>
 
-          {/* Convert Button */}
           <button
             type="submit"
             className="w-full mt-4 p-3 bg-blue-600 font-bold text-white rounded-md hover:bg-blue-700 disabled:bg-slate-400 disabled:cursor-not-allowed"
             disabled={loading}
           >
-            {loading ? 'Converting...' : 'Convert'}
+            {loading ? 'Converting...' : (user ? 'Convert & Save' : 'Convert')}
           </button>
         </form>
 
-        {/* --- Results & Errors --- */}
-        <div className="mt-6 text-center">
-            {error && <p className="text-red-600 font-semibold">{error}</p>}
+        <div className="mt-6 text-center min-h-[100px]">
+            {error && <p className="text-red-600 font-semibold p-3 bg-red-100 rounded-md">{error}</p>}
             {result && (
                 <div className="bg-slate-100/70 p-4 rounded-lg">
                     <p className="text-lg text-slate-700">
                         <span className="font-bold">{amount} {from}</span> is equal to
                     </p>
                     <p className="text-3xl font-bold text-blue-700 mt-1">
-                        {result.result.toFixed(2)} {to}
+                        {result.conversion_result.toFixed(2)} {to}
                     </p>
                     <p className="text-xs text-slate-500 mt-2">
-                        Exchange Rate: 1 {from} = {result.rate} {to}
+                        Exchange Rate: 1 {from} = {result.conversion_rate} {to}
                     </p>
                 </div>
             )}
         </div>
         
-        <p className="text-center text-xs text-slate-500 pt-4 mt-4 border-t border-slate-200">
-          You can convert amounts but need to log in to transfer funds or check the transaction history.
-        </p>
+        {!user && (
+            <p className="text-center text-xs text-slate-500 pt-4 mt-4 border-t border-slate-200">
+                Please <Link href="/login" className="font-bold text-blue-600 hover:underline">Log in</Link> to save your transfer history.
+            </p>
+        )}
       </div>
     </section>
   )
