@@ -1,0 +1,22 @@
+import { Inter } from 'next/font/google'
+import './globals.css'
+import Navbar from '@/components/Navbar'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata = {
+  title: 'Exchango',
+  description: 'Effortless Currency Conversion and Transfer Management',
+}
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      
+      <body className={`${inter.className} bg-gradient-to-br from-white via-blue-50 to-blue-100 text-slate-800`}>
+        <Navbar />
+        <main>{children}</main>
+      </body>
+    </html>
+  )
+}
