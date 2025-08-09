@@ -1,28 +1,63 @@
-'use client' 
+'use client'
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import Link from 'next/link'
+import { ArrowsUpDownIcon } from '@heroicons/react/24/outline'
+import Select, { components } from 'react-select'
+
+// Custom component to display the flag
+const Flag = ({ countryCode }) => (
+  <img
+    src={`https://flagcdn.com/16x12/${countryCode.slice(0, 2).toLowerCase()}.png`}
+    alt={`${countryCode} flag`}
+    className="mr-2"
+    width="16"
+    height="12"
+  />
+);
+
+// Custom component for the dropdown options
+const Option = (props) => (
+  <components.Option {...props}>
+    <div className="flex items-center">
+      <Flag countryCode={props.value} />
+      <span>{props.label}</span>
+    </div>
+  </components.Option>
+);
+
+// Custom component for the selected value display
+const SingleValue = ({ children, ...props }) => (
+  <components.SingleValue {...props}>
+    <div className="flex items-center truncate">
+      <Flag countryCode={props.data.value} />
+      <span className="truncate">{children}</span>
+    </div>
+  </components.SingleValue>
+);
+
 
 export default function ConverterCard() {
-  const { user, saveTransfer } = useAuth(); // Get user and saveTransfer function from context
+  const { user, saveTransfer } = useAuth();
 
+  // State variables
   const [currencies, setCurrencies] = useState([]);
-  const [from, setFrom] = useState('USD');
-  const [to, setTo] = useState('LKR');
+  const [from, setFrom] = useState({ value: 'USD', label: 'USD - United States Dollar' });
+  const [to, setTo] = useState({ value: 'LKR', label: 'LKR - Sri Lankan Rupee' });
   const [amount, setAmount] = useState(1);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const apiKey = process.env.NEXT_PUBLIC_EXCHANGE_RATE_API_KEY;
 
+  // --- FIX 1: Fetch currencies logic එක සම්පූර්ණයෙන්ම ආයෙත් දැම්මා ---
   useEffect(() => {
     if (!apiKey) {
       setError("API Key is not configured.");
       setLoading(false);
       return;
     }
-
     const fetchCurrencies = async () => {
       setLoading(true);
       setError('');
@@ -31,9 +66,13 @@ export default function ConverterCard() {
         if (!res.ok) throw new Error('Could not fetch currencies.');
         const data = await res.json();
         if (data.result === 'success') {
-          setCurrencies(data.supported_codes);
+          const formattedCurrencies = data.supported_codes.map(([code, name]) => ({
+            value: code,
+            label: `${code} - ${name}`
+          }));
+          setCurrencies(formattedCurrencies);
         } else {
-          throw new Error(data['error-type'] || 'An unknown error occurred.');
+          throw new Error(data['error-type'] || 'An error occurred.');
         }
       } catch (err) {
         setError(err.message.replace(/-/g, ' '));
@@ -42,41 +81,46 @@ export default function ConverterCard() {
         setLoading(false);
       }
     };
-    
     fetchCurrencies();
-  }, [apiKey]); 
+  }, [apiKey]);
 
+  // Swap currencies
+  const handleSwap = () => {
+    const temp = from;
+    setFrom(to);
+    setTo(temp);
+  };
+
+  // --- FIX 2: Conversion logic එක සම්පූර්ණයෙන්ම ආයෙත් දැම්මා ---
   const handleConvert = async (e) => {
     e.preventDefault();
     if (!amount || amount <= 0) {
-        setError("Please enter a valid amount.");
-        return;
+      setError("Please enter a valid amount.");
+      return;
     }
     setLoading(true);
     setError('');
     setResult(null);
-
     try {
-      const res = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/pair/${from}/${to}/${amount}`);
+      const res = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/pair/${from.value}/${to.value}/${amount}`);
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(errorData['error-type'] || 'Conversion request failed');
       }
       const data = await res.json();
       if (data.result === 'success') {
-          setResult(data);
-          // If a user is logged in, save the transfer
-          if (user) {
-            saveTransfer({
-              fromCurrency: from,
-              toCurrency: to,
-              amount: parseFloat(amount),
-              convertedAmount: data.conversion_result,
-              rate: data.conversion_rate,
-            });
-          }
+        setResult(data);
+        if (user) {
+          saveTransfer({
+            fromCurrency: from.value,
+            toCurrency: to.value,
+            amount: parseFloat(amount),
+            convertedAmount: data.conversion_result,
+            rate: data.conversion_rate,
+          });
+        }
       } else {
-          throw new Error(data['error-type'] || 'An unknown error occurred during conversion.');
+        throw new Error(data['error-type'] || 'An unknown error occurred.');
       }
     } catch (err) {
       setError(err.message.replace(/-/g, ' '));
@@ -86,91 +130,73 @@ export default function ConverterCard() {
     }
   };
 
+  // Custom styles for react-select
+  const customSelectStyles = {
+    control: (styles) => ({...styles, padding: '0.35rem', backgroundColor: 'rgba(248, 250, 252, 0.9)', border: '1px solid #cbd5e1', borderRadius: '0.375rem', boxShadow: 'none', minHeight: '50px', '&:hover': { borderColor: '#94a3b8' }}),
+    option: (styles, { isFocused, isSelected }) => ({...styles, backgroundColor: isSelected ? '#2563eb' : isFocused ? '#dbeafe' : '#fff', color: isSelected ? 'white' : '#1e293b', ':active': {...styles[':active'], backgroundColor: !isSelected ? '#d1d5db' : undefined,},}),
+  };
+
   return (
     <section id="converter" className="py-20 px-4">
       <div className="max-w-md mx-auto bg-white/60 backdrop-blur-xl rounded-2xl shadow-xl p-8">
         <h3 className="text-2xl font-bold text-center text-slate-800 mb-8">
           Currency Converter
         </h3>
-        
-        <form className="space-y-6" onSubmit={handleConvert}>
-          {/* ... (From and To dropdowns are here) ... */}
-          {/* From Currency Dropdown */}
+        <form className="space-y-4" onSubmit={handleConvert}>
+          {/* From Dropdown */}
           <div>
             <label htmlFor="from" className="block text-sm font-medium text-slate-600 mb-2">From</label>
-            <select
-              id="from"
-              value={from}
-              onChange={(e) => setFrom(e.target.value)}
-              className="w-full p-3 bg-slate-50/80 text-slate-900 rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              disabled={loading || currencies.length === 0}
-            >
-              {currencies.length === 0 ? <option>Loading...</option> : currencies.map(([code, name]) => (
-                <option key={code} value={code}>{code} - {name}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* To Currency Dropdown */}
-          <div>
-            <label htmlFor="to" className="block text-sm font-medium text-slate-600 mb-2">To</label>
-            <select
-              id="to"
-              value={to}
-              onChange={(e) => setTo(e.target.value)}
-              className="w-full p-3 bg-slate-50/80 text-slate-900 rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              disabled={loading || currencies.length === 0}
-            >
-               {currencies.length === 0 ? <option>Loading...</option> : currencies.map(([code, name]) => (
-                <option key={code} value={code}>{code} - {name}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Amount Input */}
-          <div>
-            <label htmlFor="amount" className="block text-sm font-medium text-slate-600 mb-2">Amount</label>
-            <input
-              type="number"
-              id="amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="w-full p-3 bg-slate-50/80 text-slate-900 rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              disabled={loading}
-              required
+            <Select
+              id="from" value={from} onChange={setFrom} options={currencies} styles={customSelectStyles}
+              isLoading={loading && currencies.length === 0}
+              isDisabled={loading || currencies.length === 0}
+              components={{ Option, SingleValue }}
             />
           </div>
-
-          <button
-            type="submit"
-            className="w-full mt-4 p-3 bg-blue-600 font-bold text-white rounded-md hover:bg-blue-700 disabled:bg-slate-400 disabled:cursor-not-allowed"
-            disabled={loading}
-          >
+          {/* Swap Button */}
+          <div className="flex justify-center py-1">
+            <button type="button" onClick={handleSwap} className="p-2 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 transition-transform hover:rotate-180 duration-300" aria-label="Swap currencies">
+              <ArrowsUpDownIcon className="h-5 w-5" />
+            </button>
+          </div>
+          {/* To Dropdown */}
+          <div>
+            <label htmlFor="to" className="block text-sm font-medium text-slate-600 mb-2">To</label>
+            <Select
+              id="to" value={to} onChange={setTo} options={currencies} styles={customSelectStyles}
+              isLoading={loading && currencies.length === 0}
+              isDisabled={loading || currencies.length === 0}
+              components={{ Option, SingleValue }}
+            />
+          </div>
+          {/* Amount Input */}
+          <div className="pt-2">
+            <label htmlFor="amount" className="block text-sm font-medium text-slate-600 mb-2">Amount</label>
+            <input type="number" id="amount" value={amount} onChange={(e) => setAmount(e.target.value)} className="w-full p-3 bg-slate-50/80 text-slate-900 rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none" required min="0.01" step="0.01" />
+          </div>
+          {/* Convert Button */}
+          <button type="submit" className="w-full !mt-6 p-3 bg-blue-600 font-bold text-white rounded-md hover:bg-blue-700 disabled:bg-slate-400" disabled={loading}>
             {loading ? 'Converting...' : (user ? 'Convert & Save' : 'Convert')}
           </button>
         </form>
 
+        {/* --- FIX 3: Result display logic එක සම්පූර්ණයෙන්ම ආයෙත් දැම්මා --- */}
         <div className="mt-6 text-center min-h-[100px]">
-            {error && <p className="text-red-600 font-semibold p-3 bg-red-100 rounded-md">{error}</p>}
-            {result && (
-                <div className="bg-slate-100/70 p-4 rounded-lg">
-                    <p className="text-lg text-slate-700">
-                        <span className="font-bold">{amount} {from}</span> is equal to
-                    </p>
-                    <p className="text-3xl font-bold text-blue-700 mt-1">
-                        {result.conversion_result.toFixed(2)} {to}
-                    </p>
-                    <p className="text-xs text-slate-500 mt-2">
-                        Exchange Rate: 1 {from} = {result.conversion_rate} {to}
-                    </p>
-                </div>
-            )}
+          {error && <p className="text-red-600 font-semibold p-3 bg-red-100/80 rounded-md">{error}</p>}
+          {result && (
+            <div className="bg-slate-100/70 p-4 rounded-lg">
+              <p className="text-lg text-slate-700"><span className="font-bold">{amount} {result.base_code}</span> is equal to</p>
+              <p className="text-3xl font-bold text-blue-700 mt-1">{result.conversion_result.toFixed(2)} {result.target_code}</p>
+              <p className="text-xs text-slate-500 mt-2">Exchange Rate: 1 {result.base_code} = {result.conversion_rate} {result.target_code}</p>
+            </div>
+          )}
         </div>
-        
+
+        {/* Login Message */}
         {!user && (
-            <p className="text-center text-xs text-slate-500 pt-4 mt-4 border-t border-slate-200">
-                Please <Link href="/login" className="font-bold text-blue-600 hover:underline">Log in</Link> to save your transfer history.
-            </p>
+          <p className="text-center text-xs text-slate-500 pt-4 mt-4 border-t border-slate-200">
+            Please <Link href="/login" className="font-bold text-blue-600 hover:underline">Log in</Link> to save your transfer history.
+          </p>
         )}
       </div>
     </section>
