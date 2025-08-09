@@ -6,31 +6,42 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // To check if auth state is loaded
+  const [loading, setLoading] = useState(true);
+  const [favorites, setFavorites] = useState([]);
 
+  // Load user and favorites on initial load
   useEffect(() => {
-    // Check local storage for a logged-in user when the app loads
     try {
       const loggedInUser = localStorage.getItem('user');
       if (loggedInUser) {
-        setUser(JSON.parse(loggedInUser));
+        const parsedUser = JSON.parse(loggedInUser);
+        setUser(parsedUser);
+
+        const allFavorites = JSON.parse(localStorage.getItem('favorites')) || {};
+        setFavorites(allFavorites[parsedUser.email] || []);
       }
     } catch (error) {
-      console.error("Failed to parse user from local storage", error);
+      console.error("Failed to parse user or favorites from local storage", error);
     }
     setLoading(false);
   }, []);
 
+  // --------------------
+  // AUTH FUNCTIONS
+  // --------------------
   const login = (email, password) => {
     try {
       const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
       const foundUser = storedUsers.find(
-        (u) => u.email === email && u.password === password // NOTE: In a real app, passwords would be hashed!
+        (u) => u.email === email && u.password === password
       );
-
       if (foundUser) {
         setUser(foundUser);
         localStorage.setItem('user', JSON.stringify(foundUser));
+
+        // Load their favorites
+        const allFavorites = JSON.parse(localStorage.getItem('favorites')) || {};
+        setFavorites(allFavorites[foundUser.email] || []);
         return true;
       }
       return false;
@@ -45,9 +56,7 @@ export function AuthProvider({ children }) {
       const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
       const userExists = storedUsers.some((u) => u.email === email);
 
-      if (userExists) {
-        return false; // User already exists
-      }
+      if (userExists) return false;
 
       const newUser = { name, email, password };
       storedUsers.push(newUser);
@@ -61,22 +70,46 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     setUser(null);
+    setFavorites([]);
     localStorage.removeItem('user');
   };
 
+  // --------------------
+  // FAVORITES FUNCTIONS
+  // --------------------
+  const addFavorite = (pair) => {
+    if (!user) return;
+    const newFavorites = [...favorites, pair];
+    setFavorites(newFavorites);
+
+    const allFavorites = JSON.parse(localStorage.getItem('favorites')) || {};
+    allFavorites[user.email] = newFavorites;
+    localStorage.setItem('favorites', JSON.stringify(allFavorites));
+  };
+
+  const removeFavorite = (pair) => {
+    if (!user) return;
+    const newFavorites = favorites.filter(
+      (fav) => !(fav.from === pair.from && fav.to === pair.to)
+    );
+    setFavorites(newFavorites);
+
+    const allFavorites = JSON.parse(localStorage.getItem('favorites')) || {};
+    allFavorites[user.email] = newFavorites;
+    localStorage.setItem('favorites', JSON.stringify(allFavorites));
+  };
+
+  // --------------------
+  // TRANSFER FUNCTIONS
+  // --------------------
   const saveTransfer = (transferData) => {
-    if (!user) return; // Can't save if not logged in
+    if (!user) return;
 
     try {
-      // Get all transfers from local storage
       const allTransfers = JSON.parse(localStorage.getItem('transfers')) || {};
-      // Get transfers for the current user (using their email as a key)
       const userTransfers = allTransfers[user.email] || [];
-      // Add the new transfer
       userTransfers.push({ ...transferData, id: Date.now(), createdAt: new Date() });
-      // Update the user's transfers
       allTransfers[user.email] = userTransfers;
-      // Save back to local storage
       localStorage.setItem('transfers', JSON.stringify(allTransfers));
     } catch (error) {
       console.error("Failed to save transfer", error);
@@ -85,10 +118,8 @@ export function AuthProvider({ children }) {
 
   const getTransferHistory = () => {
     if (!user) return [];
-
     try {
       const allTransfers = JSON.parse(localStorage.getItem('transfers')) || {};
-      // Return transfers for the currently logged-in user
       return allTransfers[user.email] || [];
     } catch (error) {
       console.error("Failed to get history", error);
@@ -96,7 +127,18 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const value = { user, login, logout, register, loading, saveTransfer, getTransferHistory };
+  const value = {
+    user,
+    loading,
+    login,
+    register,
+    logout,
+    saveTransfer,
+    getTransferHistory,
+    favorites,
+    addFavorite,
+    removeFavorite
+  };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
