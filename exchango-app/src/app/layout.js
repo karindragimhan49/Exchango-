@@ -20,8 +20,8 @@ export default function RootLayout({ children }) {
   };
 
   return (
-    <html lang="en">
-      
+    
+    <html lang="en" className="scroll-smooth">  
       <body className={`${inter.className} text-slate-800`} style={bodyStyle}>
         <AuthProvider>
           <div className="absolute inset-0 bg-white/ backdrop-blur-sm"></div>
