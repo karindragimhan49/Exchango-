@@ -6,7 +6,7 @@ import Head from 'next/head'
 
 export default function Home() {
   return (
-    // Layout එක අයින් කලා, මොකද ඒක RootLayout එකේ තියෙන නිසා
+   
     <> 
       <Head>
         <title>Exchango - Effortless Currency Conversion</title>
