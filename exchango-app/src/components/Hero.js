@@ -7,13 +7,13 @@ export default function Hero() {
    
     <section className="text-center py-20 sm:py-32 px-4">
       <h2 className="text-4xl sm:text-6xl font-extrabold text-slate-900">
-        Effortless Currency
+          Your Gateway to
       </h2>
       <h2 className="text-4xl sm:text-6xl font-extrabold text-slate-900 mt-2">
-        Conversion and Transfer
+        Global Transactions
       </h2>
       <p className="mt-6 max-w-2xl mx-auto text-lg text-slate-600">
-        Stay on top of your finances with our real-time conversion rates and comprehensive transfer tracking.
+        Seamlessly convert currencies and manage your international transfers with real-time rates and unmatched simplicity.
       </p>
       <div className="mt-8">
         <a
