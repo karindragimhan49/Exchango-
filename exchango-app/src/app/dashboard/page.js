@@ -31,7 +31,9 @@ export default function Dashboard() {
   return (
     <div className="max-w-4xl mx-auto py-12 px-4">
       <h1 className="text-3xl font-bold text-slate-900 mb-2">Transfer History</h1>
-      <p className="text-slate-600 mb-8">Here are all the conversions you've made, {user.name}.</p>
+      <p className="text-slate-600 mb-8">Here are all the conversions you&apos;ve made, {user.name}.</p>
+
+
 
       <div className="space-y-4">
         {history.length > 0 ? (
