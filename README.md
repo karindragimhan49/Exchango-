@@ -5,8 +5,20 @@
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)
 
-
+## ✨ HERO
 ![Exchango Screenshot](https://github.com/karindragimhan49/Exchango-/blob/056f1f493e88f196cb3aee7702216f8a62a97a0d/exchango-app/public/main.png) 
+
+## ✨ Currency Converter
+![Exchango Screenshot](https://github.com/karindragimhan49/Exchango-/blob/b9363eed4ef0696f68dd25424c6682c1aa8bab49/exchango-app/public/curency.png) 
+
+## ✨ Dashboard
+![Exchango Screenshot](https://github.com/karindragimhan49/Exchango-/blob/b9363eed4ef0696f68dd25424c6682c1aa8bab49/exchango-app/public/dashboard.png) 
+
+## ✨ Home
+![Exchango Screenshot](https://github.com/karindragimhan49/Exchango-/blob/b9363eed4ef0696f68dd25424c6682c1aa8bab49/exchango-app/public/home2.png) 
+
+## ✨ Login
+![Exchango Screenshot](https://github.com/karindragimhan49/Exchango-/blob/b9363eed4ef0696f68dd25424c6682c1aa8bab49/exchango-app/public/login.png) 
 
 
 A feature-rich, frontend-focused currency conversion application built with Next.js and Tailwind CSS. Exchango provides real-time exchange rates, a seamless user experience, and personalized features like transfer history and favorite currency pairs, all powered by the browser's local storage.
@@ -92,3 +104,4 @@ Karindra Gimhan
 -   GitHub: [@your-username](https://github.com/your-username) 
 
 -   LinkedIn: [Your Name](https://linkedin.com/in/your-profile) 
+
