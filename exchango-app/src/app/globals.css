@@ -1,2 +1,15 @@
 @import "tailwindcss";
 
+@keyframes scroll {
+  to {
+    transform: translate(calc(-50% - 0.5rem * 6)); /* 50% of the container + half of the gap */
+  }
+}
+
+.scroller {
+  animation: scroll 40s linear infinite;
+}
+
+.scroller-container:hover .scroller {
+  animation-play-state: paused;
+}

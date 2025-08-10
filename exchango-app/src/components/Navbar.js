@@ -17,7 +17,7 @@ export default function Navbar() {
     <header className="sticky top-0 bg-white/90 backdrop-blur-md z-20 border-b border-slate-200/80 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="text-2xl font-bold text-blue-600 hover:opacity-80 transition-opacity">
+          <Link href="/" className="text-2xl font-bold text-indigo-600 hover:opacity-80 transition-opacity">
             Exchango
           </Link>
           <div className="flex items-center gap-6">
@@ -28,14 +28,14 @@ export default function Navbar() {
               <Menu as="div" className="relative inline-block text-left">
                 <div>
                   <MenuButton className="group flex items-center gap-2 rounded-full p-2 text-sm hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
-                    <span className="sr-only">Open user menu</span>
-                    {/* The Icon */}
-                    <UserCircleIcon className="h-7 w-7 text-slate-500 group-hover:text-blue-600" />
-                    {/* The Name (hides on small screens) */}
-                    <span className="hidden sm:block font-medium text-slate-700 group-hover:text-slate-900">
-                      {user.name.split(' ')[0]}
-                    </span>
-                  </MenuButton>
+  <span className="sr-only">Open user menu</span>
+  {/* The Icon */}
+  <UserCircleIcon className="h-7 w-7 text-slate-500 group-hover:text-indigo-600" />
+  {/* The Name (always visible now) */}
+  <span className="font-medium text-slate-700 group-hover:text-slate-900">
+    {user?.name ?? 'Profile'}
+  </span>
+</MenuButton>
                 </div>
                 <Transition
                   as={Fragment}
@@ -55,16 +55,16 @@ export default function Navbar() {
                     {/* Section 2: Actions */}
                     <div className="py-1">
                       <MenuItem>
-                        {({ active }) => (
-                          <Link
-                            href="/dashboard"
-                            className={`${active ? 'bg-slate-100 text-slate-900' : 'text-slate-700'} group flex items-center w-full px-4 py-2 text-sm`}
-                          >
-                            <ClockIcon className="mr-3 h-5 w-5 text-slate-400 group-hover:text-slate-500" />
-                            Transfer History
-                          </Link>
-                        )}
-                      </MenuItem>
+  {({ active }) => (
+    <Link
+      href="/dashboard"
+      className={`${active ? 'bg-slate-100 text-slate-900' : 'text-slate-700'} group flex items-center w-full px-4 py-2 text-sm`}
+    >
+      <ClockIcon className="mr-3 h-5 w-5 text-slate-400 group-hover:text-slate-500" />
+      Transfer History
+    </Link>
+  )}
+</MenuItem>
                     </div>
                     {/* Section 3: Logout */}
                     <div className="py-1">

@@ -33,21 +33,21 @@ export default function Login() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label className="text-sm font-medium text-slate-600">Email</label>
-                <input onChange={(e) => setEmail(e.target.value)} type="email" placeholder="john.doe@example.com" className="w-full p-3 mt-1 bg-white rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none" required />
+                <input onChange={(e) => setEmail(e.target.value)} type="email" placeholder="john.doe@example.com" className="w-full p-3 mt-1 bg-white rounded-md border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none" required />
               </div>
               <div>
                 <label className="text-sm font-medium text-slate-600">Password</label>
-                <input onChange={(e) => setPassword(e.target.value)} type="password" placeholder="********" className="w-full p-3 mt-1 bg-white rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none" required />
+                <input onChange={(e) => setPassword(e.target.value)} type="password" placeholder="********" className="w-full p-3 mt-1 bg-white rounded-md border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none" required />
               </div>
-              <button type="submit" className="w-full p-3 bg-blue-600 text-white font-bold rounded-md hover:bg-blue-700 disabled:bg-slate-400" disabled={loading}>
+              <button type="submit" className="w-full p-3 bg-indigo-600 text-white font-bold rounded-md hover:bg-indigo-700 disabled:bg-slate-400" disabled={loading}>
                 {loading ? "Logging in..." : "Login"}
               </button>
               {error && <div className="bg-red-100 text-red-600 p-3 rounded-md text-sm text-center">{error}</div>}
             </form>
             <div className="text-center mt-6">
                 <p className="text-sm text-slate-600">
-                    Don't have an account?{' '}
-                    <Link href="/register" className="text-blue-600 font-semibold hover:underline">
+                    Don&apos;t have an account?{' '}
+                    <Link href="/register" className="text-indigo-600 font-semibold hover:underline">
                         Register
                     </Link>
                 </p>

@@ -47,7 +47,7 @@ export default function Dashboard() {
                   </p>
                 </div>
                 <div className="text-right flex-shrink-0 ml-4">
-                  <p className="text-sm font-semibold text-blue-600">
+                  <p className="text-sm font-semibold text-indigo-600">
                     Applied Rate
                   </p>
                   <p className="text-slate-600">
@@ -59,8 +59,8 @@ export default function Dashboard() {
           ))
         ) : (
           <div className="text-center py-16 bg-white/70 rounded-lg">
-            <p className="text-slate-500 text-lg">You haven't made any transfers yet.</p>
-            <p className="text-slate-400 mt-2">Go back to the <Link href="/" className="text-blue-600 hover:underline">converter</Link> to get started!</p>
+            <p className="text-slate-500 text-lg">You haven&apos;t made any transfers yet.</p>
+            <p className="text-slate-400 mt-2">Go back to the <Link href="/" className="text-indigo-600 hover:underline">converter</Link> to get started!</p>
           </div>
         )}
       </div>

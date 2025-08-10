@@ -18,7 +18,7 @@ export default function Hero() {
       <div className="mt-8">
         <a
           href="#converter"
-          className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-md font-bold hover:bg-blue-700"
+          className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-md font-bold hover:bg-indigo-800"
         >
           Try Now
           <ChevronDownIcon className="h-5 w-5" />

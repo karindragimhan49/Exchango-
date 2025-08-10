@@ -5,17 +5,18 @@ import Link from 'next/link'
 import { ArrowsUpDownIcon, StarIcon as StarIconOutline } from '@heroicons/react/24/outline'
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid'
 import Select, { components } from 'react-select'
+import Image from 'next/image';
 
 // --- Custom Components ---
 const Flag = ({ countryCode }) => (
-  <img
+  <Image
     src={`https://flagcdn.com/16x12/${countryCode.slice(0, 2).toLowerCase()}.png`}
     alt={`${countryCode} flag`}
     className="mr-2"
-    width="16"
-    height="12"
+    width={16} 
+    height={12} 
   />
-)
+);
 
 const Option = (props) => (
   <components.Option {...props}>
@@ -265,7 +266,7 @@ export default function ConverterCard() {
               id="amount"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full p-3 bg-slate-50/80 text-slate-900 rounded-md border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full p-3 bg-slate-50/80 text-slate-900 rounded-md border border-slate-300 focus:ring-2 focus:ring-indigo-600 focus:outline-none"
               required
               min="0.01"
               step="0.01"
@@ -275,7 +276,7 @@ export default function ConverterCard() {
           {/* Convert Button */}
           <button
             type="submit"
-            className="w-full !mt-6 p-3 bg-blue-600 font-bold text-white rounded-md hover:bg-blue-700 disabled:bg-slate-400"
+            className="w-full !mt-6 p-3 bg-indigo-600 font-bold text-white rounded-md hover:bg-indigo-800 disabled:bg-slate-400"
             disabled={loading}
           >
             {loading ? 'Converting...' : (user ? 'Convert & Save' : 'Convert')}
@@ -290,7 +291,7 @@ export default function ConverterCard() {
               <p className="text-lg text-slate-700">
                 <span className="font-bold">{amount} {result.base_code}</span> is equal to
               </p>
-              <p className="text-3xl font-bold text-blue-700 mt-1">
+              <p className="text-3xl font-bold text-indigo-700 mt-1">
                 {result.conversion_result.toFixed(2)} {result.target_code}
               </p>
               <p className="text-xs text-slate-500 mt-2">
@@ -303,7 +304,7 @@ export default function ConverterCard() {
         {/* Login Prompt */}
         {!user && (
           <p className="text-center text-xs text-slate-500 pt-4 mt-4 border-t border-slate-200">
-            Please <Link href="/login" className="font-bold text-blue-600 hover:underline">Log in</Link> to save your transfer history & favorites.
+            Please <Link href="/login" className="font-bold text-indigo-600 hover:underline">Log in</Link> to save your transfer history & favorites.
           </p>
         )}
       </div>

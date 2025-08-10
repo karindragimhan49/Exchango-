@@ -1,6 +1,7 @@
 import Hero from '../components/Hero'
 import ConverterCard from '../components/ConverterCard'
-
+import Faq from '../components/Faq'
+import SupportedCountries from '../components/SupportedCountries'
 import Head from 'next/head'
 
 export default function Home() {
@@ -12,6 +13,8 @@ export default function Home() {
       
       <Hero />
       <ConverterCard />
+      <SupportedCountries />
+      <Faq />
     </>
   )
 }
