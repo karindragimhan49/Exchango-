@@ -101,8 +101,9 @@ This project is licensed under the MIT License - see the `LICENSE` file for deta
 
 Karindra Gimhan 
 
--   GitHub: [@your-username](https://github.com/your-username) 
+-   Portfolio: [Portfolio](https://portfolio-1p99.vercel.app/) 
 
--   LinkedIn: [Your Name](https://linkedin.com/in/your-profile) 
+-   LinkedIn: [Karindra Gimhan](https://www.linkedin.com/in/karindragimhan49/) 
+
 
 
