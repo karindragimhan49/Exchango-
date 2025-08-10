@@ -23,7 +23,7 @@
 
 A feature-rich, frontend-focused currency conversion application built with Next.js and Tailwind CSS. Exchango provides real-time exchange rates, a seamless user experience, and personalized features like transfer history and favorite currency pairs, all powered by the browser's local storage.
 
-**Live Demo:** [**exchango.netlify.app**](https://exchango.netlify.app) 
+**Live Demo:** [**exchango.vercel.app**](https://exchango-teal.vercel.app/) 
 
 ---
 
@@ -104,4 +104,5 @@ Karindra Gimhan
 -   GitHub: [@your-username](https://github.com/your-username) 
 
 -   LinkedIn: [Your Name](https://linkedin.com/in/your-profile) 
+
 
