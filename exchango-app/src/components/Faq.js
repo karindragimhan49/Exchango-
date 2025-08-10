@@ -2,7 +2,7 @@
 import { Disclosure, Transition } from '@headlessui/react'
 import { ChevronUpIcon } from '@heroicons/react/24/solid'
 
-// --- මෙතන ඔයාට කැමති ප්‍රශ්න සහ උත්තර දාන්න පුළුවන් ---
+
 const faqs = [
   {
     question: "How are the exchange rates determined?",

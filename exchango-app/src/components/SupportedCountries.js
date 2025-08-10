@@ -18,7 +18,7 @@ const logos = [
 ];
 
 export default function SupportedCountries() {
-  // Infinite scroll effect එකට, අපි logo list එක දෙපාරක් පාවිච්චි කරනවා
+
   const extendedLogos = [...logos, ...logos];
 
   return (
