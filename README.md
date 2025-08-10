@@ -6,7 +6,7 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)
 
 
-![Exchango Screenshot](./images/exchango-screenshot.png) 
+![Exchango Screenshot](https://github.com/karindragimhan49/Exchango-/blob/056f1f493e88f196cb3aee7702216f8a62a97a0d/exchango-app/public/main.png) 
 
 
 A feature-rich, frontend-focused currency conversion application built with Next.js and Tailwind CSS. Exchango provides real-time exchange rates, a seamless user experience, and personalized features like transfer history and favorite currency pairs, all powered by the browser's local storage.
@@ -90,4 +90,5 @@ This project is licensed under the MIT License - see the `LICENSE` file for deta
 Karindra Gimhan 
 
 -   GitHub: [@your-username](https://github.com/your-username) 
+
 -   LinkedIn: [Your Name](https://linkedin.com/in/your-profile) 
